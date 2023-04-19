@@ -32,7 +32,9 @@ postsRouter.post("/", async (req, res) => {
     return res.status(201).json(newPost);
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "" });
+    res
+      .status(500)
+      .json({ message: "Veritabanına kaydedilirken bir hata oluştu" });
   }
 });
 
@@ -57,9 +59,29 @@ postsRouter.get("/:id", async (req, res) => {
 // Update Post
 postsRouter.put("/:id", async (req, res) => {
   try {
+    //console.log(req.body);
+    const { title, contents } = req.body;
+    // console.log(req.params);
+    const { id } = req.params;
+
+    if (!title || !contents) {
+      return res.status(400).json({
+        message: "Lütfen gönderi için bir title ve contents sağlayın",
+      });
+    }
+
+    const post = await postsController.findById(id);
+    if (!post) {
+      return res
+        .status(404)
+        .json({ message: "Belirtilen ID'li gönderi bulunamadı" });
+    }
+    await postsController.update(id, { title, contents });
+    const updatedPost = await postsController.findById(id);
+    res.status(200).json(updatedPost);
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "" });
+    res.status(500).json({ message: "Gönderi bilgileri güncellenemedi" });
   }
 });
 
