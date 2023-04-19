@@ -109,9 +109,19 @@ postsRouter.delete("/:id", async (req, res) => {
 // Get Comments by postID
 postsRouter.get("/:id/comments", async (req, res) => {
   try {
+    // console.log(req.params);
+    const { id } = req.params;
+    const post = await postsController.findById(id);
+    if (!post) {
+      return res
+        .status(404)
+        .json({ message: "Belirtilen ID'li gönderi bulunamadı" });
+    }
+    const comments = await postsController.findPostComments(id);
+    res.status(200).json(comments);
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "" });
+    res.status(500).json({ message: "Yorumlar bilgisi getirilemedi" });
   }
 });
 
