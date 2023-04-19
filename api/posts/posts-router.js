@@ -6,15 +6,18 @@ const postsController = require("./posts-model");
 const postsRouter = express.Router();
 
 // Define the routes for the posts API
+// Get All Posts
 postsRouter.get("/", async (req, res) => {
   try {
     const posts = await postsController.find();
-    res.json(posts);
+    res.status(200).json(posts);
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Gönderiler alınamadı" });
   }
 });
+
+// Create Post
 postsRouter.post("/", async (req, res) => {
   try {
     //console.log(req.body);
@@ -32,13 +35,26 @@ postsRouter.post("/", async (req, res) => {
     res.status(500).json({ message: "" });
   }
 });
+
+// Get Post
 postsRouter.get("/:id", async (req, res) => {
   try {
+    // console.log(req.params);
+    const { id } = req.params;
+    const post = await postsController.findById(id);
+    if (!post) {
+      return res
+        .status(404)
+        .json({ message: "Belirtilen ID'li gönderi bulunamadı" });
+    }
+    return res.status(200).json(post);
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "" });
+    res.status(500).json({ message: "Gönderi bilgisi alınamadı" });
   }
 });
+
+// Update Post
 postsRouter.put("/:id", async (req, res) => {
   try {
   } catch (err) {
@@ -46,6 +62,8 @@ postsRouter.put("/:id", async (req, res) => {
     res.status(500).json({ message: "" });
   }
 });
+
+// Delete Post
 postsRouter.delete("/:id", async (req, res) => {
   try {
   } catch (err) {
@@ -53,6 +71,8 @@ postsRouter.delete("/:id", async (req, res) => {
     res.status(500).json({ message: "" });
   }
 });
+
+// Get Comments by postID
 postsRouter.get("/:id/comments", async (req, res) => {
   try {
   } catch (err) {
